@@ -24,22 +24,24 @@ func NewQueueService(repo port.QueueRepository) *QueueService {
 
 func (s *QueueService) Enqueue(queueName string, message string) error {
 	err := s.repo.Enqueue(queueName, message)
-	if err != nil {
-		if errors.Is(err, repository.ErrQueueFull) {
-			return ErrQueueFull
-		}
+	switch {
+	case err == nil:
+		return nil
+	case errors.Is(err, repository.ErrQueueFull):
+		return ErrQueueFull
+	default:
 		return ErrUnexpected
 	}
-	return nil
 }
 
 func (s *QueueService) Dequeue(queueName string, timeout time.Duration) (string, error) {
 	msg, err := s.repo.Dequeue(queueName, timeout)
-	if err != nil {
-		if errors.Is(err, repository.ErrTimeout) {
-			return "", ErrQueueTimeout
-		}
+	switch {
+	case err == nil:
+		return msg, nil
+	case errors.Is(err, repository.ErrTimeout):
+		return "", ErrQueueTimeout
+	default:
 		return "", ErrUnexpected
 	}
-	return msg, nil
 }

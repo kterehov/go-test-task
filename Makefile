@@ -10,4 +10,3 @@ DEFAULT_TIMEOUT := 30
 .PHONY: run
 run:
 	go run cmd/app/main.go --port $(PORT) --max-queues $(MAX_QUEUES) --max-messages $(MAX_MESSAGES) --default-timeout $(DEFAULT_TIMEOUT)
-	
